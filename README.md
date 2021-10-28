@@ -37,3 +37,8 @@ class MainViewModel : ViewModel() {
     }
 }
 ```
+
+<h4> LoadingState </h4>
+
+LoadingState is sealed class which is used to update data loading status on ui, user should be aware of data loading state.
+LoadingState have three stages : Loading, Success and Error
