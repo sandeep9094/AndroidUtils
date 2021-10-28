@@ -14,3 +14,26 @@ EncryptedSharedPreferences is an alternative for using SharedPreferences for sen
 
 Android webview error page always shows error page with its url. We should always try to hide domain with some error page.
 This is just a sample to load default html error page on webview
+
+<h4> ApiResult </h4>
+
+ApiResult is common structure for all api responses in app. This is sealed class which helps to change success response
+according to your data class
+```sh
+class MainViewModel : ViewModel() {
+    private var response:MutableLiveData<ApiResult<User>> = MutableLiveData()
+
+    private fun fetchData() {
+        response.value = ApiResult.Loading
+        val apiCall = ApiCall(object: ApiCall.Callback {
+        		fun onSuccess() {
+        			val user = User("Sandeep Kumar", 24)
+					response.value = ApiResult.Success(user)
+        		}
+        		fun onFailed() {
+        			response.value = ApiResult.Error("Internet is not working!")
+        		}
+        })
+    }
+}
+```
