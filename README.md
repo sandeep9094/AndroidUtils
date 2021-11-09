@@ -43,3 +43,39 @@ class MainViewModel : ViewModel() {
 LoadingState is sealed class which is used to update data loading status on ui, user should be aware of data loading state.
 LoadingState have three stages : Loading, Success and Error
 
+<h4> Automate Build Name </h4>
+
+Application build always have app-release.apk as default name, how much time we can save by write gradle script to auto rename every build file name.
+
+```sh
+android {
+    buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if (variant.buildType.name == "debug") {
+                output.outputFileName = output.outputFileName
+                        .replace(project.name, "MyApp")
+                        .replace("-", "_")
+                        .replace(".apk", "_v${variant.versionName}.apk")
+            } else {
+                output.outputFileName = output.outputFileName
+                        .replace(project.name, "MyApp")
+                        .replace("-" + variant.buildType.name, "")
+                        .replace(".apk", "_v${variant.versionName}.apk")
+            }
+
+        }
+    }
+
+}
+```
