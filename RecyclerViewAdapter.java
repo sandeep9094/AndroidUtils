@@ -48,7 +48,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
 
     interface ItemClickListener {
-        void vacationSelected(User user);
+        void userSelected(User user);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -71,7 +71,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             rootLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.vacationSelected(user);
+                    listener.userSelected(user);
                 }
             });
         }
