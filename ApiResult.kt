@@ -1,4 +1,4 @@
-package com.kochartech.myapplication
+package com.example.myapplication
 
 sealed class ApiResult<out T> {
     object Loading : ApiResult<Nothing>()
