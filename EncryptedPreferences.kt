@@ -1,4 +1,4 @@
-package com.kochartech.jetpacklibrariesexamples
+package com.example.jetpacklibrariesexamples
 
 import android.content.Context
 import android.content.SharedPreferences
