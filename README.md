@@ -80,7 +80,8 @@ android {
 
 }
 ```
-# Retrofit
+[<h4> Retrofit </h4>](https://github.com/sandeep9094/AndroidUtils/tree/master/retrofit)
+
 A type-safe HTTP client for Android and Java.
 ```sh
 implementation 'com.squareup.retrofit2:retrofit:2.9.0'
@@ -96,7 +97,7 @@ Below are the classes required for Working with Retrofit
 3. Network Connection Interceptor
 4. No Internet Connection Exception Handling
 
-<h4> RetrofitInstance </h4>
+RetrofitInstance
 
 ```sh
 object RetrofitManager {
@@ -130,7 +131,7 @@ object RetrofitManager {
 
 }
 ```
-<h4> ApiService </h4>
+ApiService
 
 ```sh
 interface ApiService {
@@ -138,7 +139,7 @@ interface ApiService {
     fun getRandomActivity(): Call<ModelClass>
 }
 ```
-<h4> Network Connection Interceptor </h4>
+Network Connection Interceptor
 
 ```sh
 class NetworkConnectionInterceptor(private val context: Context) : Interceptor {
@@ -159,7 +160,7 @@ class NetworkConnectionInterceptor(private val context: Context) : Interceptor {
 
 }
 ```
-<h4> No Internet Connectivity Exception </h4>
+No Internet Connectivity Exception
 
 ```sh
 class NoConnectivityException : IOException() {
@@ -168,7 +169,7 @@ class NoConnectivityException : IOException() {
 }
 ```
 
-Implementation Example
+<h4> Retrofit Implementation </h4>
 ```sh
 val apiService = RetrofitManager.getApiService(this)
         val call = apiService.getRandomActivity()
