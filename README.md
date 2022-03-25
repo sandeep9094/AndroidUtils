@@ -170,7 +170,9 @@ class NoConnectivityException : IOException() {
 ```
 
 <h4> Retrofit Implementation </h4>
+
 ```sh
+
 val apiService = RetrofitManager.getApiService(this)
         val call = apiService.getRandomActivity()
         call.enqueue(object : Callback<ModelClass> {
@@ -185,4 +187,5 @@ val apiService = RetrofitManager.getApiService(this)
             }
 
         })
+	
 ```
