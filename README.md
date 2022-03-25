@@ -101,7 +101,7 @@ Below are the classes required for Working with Retrofit
 ```sh
 object RetrofitManager {
 
-    const val BASE_URL = "https://ciprand.p3p.repl.co/"
+    const val BASE_URL = ""
 
     fun getApiService(context: Context): ApiService {
         val retrofit = Retrofit.Builder()
@@ -134,8 +134,8 @@ object RetrofitManager {
 
 ```sh
 interface ApiService {
-    @GET("/api?len=20&count=10")
-    fun getRandomActivity(): Call<RandomString>
+    @GET("/path")
+    fun getRandomActivity(): Call<ModelClass>
 }
 ```
 <h4> Network Connection Interceptor </h4>
@@ -166,4 +166,22 @@ class NoConnectivityException : IOException() {
     override val message: String
         get() = "No Internet Connection"
 }
+```
+
+Implementation Example
+```sh
+val apiService = RetrofitManager.getApiService(this)
+        val call = apiService.getRandomActivity()
+        call.enqueue(object : Callback<ModelClass> {
+            override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                Log.d("MainActivity", "Response : ${response.body()}")
+            }
+
+            override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                if (t is NoConnectivityException) {
+                    Log.d("MainActivity", "onFailure : ${t.localizedMessage}")
+                }
+            }
+
+        })
 ```
