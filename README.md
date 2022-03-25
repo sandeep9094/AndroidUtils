@@ -80,3 +80,90 @@ android {
 
 }
 ```
+# Retrofit
+A type-safe HTTP client for Android and Java.
+```sh
+implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+implementation 'com.squareup.okhttp3:logging-interceptor:4.4.1'
+implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.4.1'
+```
+
+Below are the classes required for Working with Retrofit
+1. RetrofitInstance
+2. ApiService
+3. Network Connection Interceptor
+4. No Internet Connection Exception Handling
+
+<h4> RetrofitInstance </h4>
+
+```sh
+object RetrofitManager {
+
+    const val BASE_URL = "https://ciprand.p3p.repl.co/"
+
+    fun getApiService(context: Context): ApiService {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(getOkHttpClient(context))
+            .build()
+        return retrofit.create(ApiService::class.java)
+    }
+
+    private fun getOkHttpClient(context: Context): OkHttpClient {
+        val logging = HttpLoggingInterceptor() // set your desired log level
+        if (BuildConfig.DEBUG) {
+            logging.level = HttpLoggingInterceptor.Level.BASIC
+        } else {
+            logging.level = HttpLoggingInterceptor.Level.NONE
+        }
+        val okHttpClientBuilder = OkHttpClient.Builder()
+            .addInterceptor(NetworkConnectionInterceptor(context))
+            .addInterceptor(logging)
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+        return okHttpClientBuilder.build()
+    }
+
+}
+```
+<h4> ApiService </h4>
+
+```sh
+interface ApiService {
+    @GET("/api?len=20&count=10")
+    fun getRandomActivity(): Call<RandomString>
+}
+```
+<h4> Network Connection Interceptor </h4>
+
+```sh
+class NetworkConnectionInterceptor(private val context: Context) : Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        if (!isConnected()) {
+            throw NoConnectivityException()
+        }
+        val builder: Request.Builder = chain.request().newBuilder()
+        return chain.proceed(builder.build())
+    }
+
+    private fun isConnected(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val netInfo = connectivityManager.activeNetworkInfo
+        return netInfo != null && netInfo.isConnected
+    }
+
+}
+```
+<h4> No Internet Connectivity Exception </h4>
+
+```sh
+class NoConnectivityException : IOException() {
+    override val message: String
+        get() = "No Internet Connection"
+}
+```
