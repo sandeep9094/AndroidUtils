@@ -189,3 +189,43 @@ val apiService = RetrofitManager.getApiService(this)
         })
 	
 ```
+[<h4> Shared Preferences </h4>](https://github.com/sandeep9094/AndroidUtils/blob/master/SharedPrefs.kt)
+ Shared Preferences allow you to save and retrieve data in the form of key,value pair.
+ 
+```sh
+class SharedPrefs(context: Context) {
+
+    private val preferences = context.getSharedPreferences(context.packageName, Context.MODE_PRIVATE)
+    private val USER_NAME = "user_name"
+
+    var userName: String
+        get() = preferences.getString(USER_NAME, "") ?: ""
+        set(value) = preferences.edit().putString(USER_NAME, value).apply()
+
+}
+```
+
+Initialize (lazy) SharedPrefs instance in Application class, and later on we will access instance of SharedPrefs directly from application class.
+```sh
+val Prefs: SharedPrefs by lazy {
+    MyApplicationClass.sharedPrefs
+}
+
+class MyApplicationClass : Application() {
+    companion object {
+        lateinit var sharedPrefs: SharedPrefs
+    }
+    override fun onCreate() {
+        super.onCreate()
+        sharedPrefs = SharedPrefs(this)
+    }
+}
+```
+How to Update/Fetch data from shared preferences class.
+```sh
+// Update value in sharedPrefs
+Prefs.userName = "Sandeep Kumar"
+
+// Fetch value from sharedPrefs
+val userName = Prefs.userName
+```
