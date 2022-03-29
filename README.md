@@ -229,3 +229,12 @@ Prefs.userName = "Sandeep Kumar"
 // Fetch value from sharedPrefs
 val userName = Prefs.userName
 ```
+
+# Contribute
+
+Would you like to help with this project? Great! You don't have to be a developer, either. If you've found a bug or have an idea for an improvement, please open an issue and tell us about it.
+
+If you are a developer wanting contribute an enhancement, bugfix or other patch to this project, please fork this repository and submit a pull request detailing your changes. We review all PRs!
+
+This open source project is released under the MIT license which means if you would like to use this project's code in your own project you are free to do so. Speaking of, if you have used our code in a cool new project we would like to hear about it! Please send us an email.
+
