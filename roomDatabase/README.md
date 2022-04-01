@@ -5,6 +5,8 @@ The Room persistence library provides an abstraction layer over SQLite to allow 
 -    Convenience annotations that minimize repetitive and error-prone boilerplate code.
  -   Streamlined database migration paths.
 
+Add depedency in build.gradle(app)
+NOTE: Use kapt instead of annotationProcessor in compiler dependency of room-compiler
 ```sh
 plugins {
     id 'kotlin-kapt'
