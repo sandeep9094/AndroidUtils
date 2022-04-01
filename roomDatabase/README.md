@@ -1,4 +1,4 @@
-[<h4> Room Database </h4>](https://github.com/sandeep9094/AndroidUtils/tree/master/retrofit)
+[<h4> Room Database </h4>](https://github.com/sandeep9094/AndroidUtils/tree/master/roomDatabase)
 
 The Room persistence library provides an abstraction layer over SQLite to allow fluent database access while harnessing the full power of SQLite. In particular, Room provides the following benefits:
    - Compile-time verification of SQL queries.
