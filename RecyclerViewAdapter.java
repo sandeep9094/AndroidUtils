@@ -8,8 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.samdeep.samdeepp_3175mt.R;
-import com.samdeep.samdeepp_3175mt.User;
 
 import java.util.ArrayList;
 
