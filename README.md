@@ -50,36 +50,24 @@ Application build always have app-release.apk as default name, how much time we 
 
 ```sh
 android {
-    buildTypes {
-        debug {
-            applicationIdSuffix '.debug'
-        }
-
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    android.applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            if (variant.buildType.name == "debug") {
-                output.outputFileName = output.outputFileName
-                        .replace(project.name, "MyApp")
-                        .replace("-", "_")
-                        .replace(".apk", "_v${variant.versionName}.apk")
-            } else {
-                output.outputFileName = output.outputFileName
-                        .replace(project.name, "MyApp")
-                        .replace("-" + variant.buildType.name, "")
-                        .replace(".apk", "_v${variant.versionName}.apk")
-            }
-
-        }
-    }
-
+  ...
+  defaultConfig {
+    ...
+    archivesBaseName = "${applicationId}_v${versionName}"
+  }
 }
 ```
+Kotlin DSL Version
+```sh
+android {
+  ...
+  defaultConfig {
+    ...
+    setProperty("archivesBaseName", "${applicationId}_v${versionName}")
+  }
+}
+```
+
 [<h4> Retrofit </h4>](https://github.com/sandeep9094/AndroidUtils/tree/master/retrofit)
 
 A type-safe HTTP client for Android and Java.
