@@ -1,6 +1,5 @@
 package com.example.retrofitbestpractice.retrofit
 
-import com.kochartech.retrofitbestpractice.RandomString
 import retrofit2.Call
 import retrofit2.http.GET
 

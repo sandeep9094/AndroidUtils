@@ -1,7 +1,6 @@
 package com.example.retrofitbestpractice.retrofit
 
 import android.content.Context
-import com.kochartech.retrofitbestpractice.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
