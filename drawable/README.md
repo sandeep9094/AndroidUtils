@@ -1,0 +1,15 @@
+### Drawable
+
+##### bg_button_white.xml
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#000000">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+</ripple>
+```
