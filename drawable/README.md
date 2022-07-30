@@ -1,6 +1,6 @@
-### Drawable
+### Button Background Drawables
 
-##### bg_button_white.xml
+#####  White Background with Ripple effect
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
