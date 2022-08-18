@@ -1,5 +1,4 @@
 import android.content.Context
-import com.developidea.bored.utility.emptyString
 
 class SharedPrefs(context: Context) {
 
