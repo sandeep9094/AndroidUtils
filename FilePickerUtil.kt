@@ -1,4 +1,4 @@
-package com.kochartech.filepickerandroid
+package com.developidea.filepickerandroid
 
 import android.app.Activity
 import android.content.Intent
