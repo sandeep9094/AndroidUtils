@@ -110,6 +110,99 @@ Prefs.userName = "Sandeep Kumar"
 val userName = Prefs.userName
 ```
 
+<h4>PDF File Picker </h4>
+Pdf file selector and viewer
+ 
+Add permission in manifest.xml and enable legeacy external storage
+```sh
+<manifest>
+	...
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <application
+    	...
+        android:requestLegacyExternalStorage="true">
+    </application>
+
+</manifest>
+```
+
+Below class have required funcations
+1. Pick pdf file 
+2. Open pdf file
+3. Get pdf file display name
+4. Thumbnail image of file
+
+```sh
+object FilePickerUtil {
+
+    fun openFilePicker(activity: Activity, responseCode: Int) {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/pdf"
+        }
+        activity.startActivityForResult(intent, responseCode)
+    }
+
+    fun viewFile(activity: Activity, fileUri: Uri?) {
+        val viewIntent = Intent(Intent.ACTION_VIEW)
+        viewIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        viewIntent.data = fileUri
+        val intent = Intent.createChooser(viewIntent, "Choose an application to open with:")
+        activity.startActivity(intent)
+    }
+
+    fun getFileName(activity: Activity, uri: Uri): String {
+        val fileName = "Unknown"
+        val cursor: Cursor? = activity.contentResolver.query(
+            uri, null, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (columnIndex <= 0) {
+                    return fileName
+                }
+                return it.getString(columnIndex)
+            }
+        }
+        return fileName
+    }
+
+    fun getBitmapFromUri(activity: Activity, uri: Uri): Bitmap? {
+        try {
+            val parcelFileDescriptor: ParcelFileDescriptor? = activity.contentResolver.openFileDescriptor(uri, "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val image: Bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            parcelFileDescriptor.close()
+            return image
+        } catch (exception: Exception) {
+            return null
+        }
+    }
+}
+
+```
+
+<b>Implementation</b>
+```sh
+FilePickerUtil.openFilePicker(this, PICK_PDF_FILE) // To open file picker
+
+FilePickerUtil.viewFile(this, fileUri) //To open selected file uri
+```
+Activity Result for getting result of selected pdf file
+```sh
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_PDF_FILE && resultCode == Activity.RESULT_OK) {
+            data?.data?.also { uri ->
+                //Use file uri
+            }
+        }
+
+    }
+```
+
 # Contribute
 
 Would you like to help with this project? Great! You don't have to be a developer, either. If you've found a bug or have an idea for an improvement, please open an issue and tell us about it.
