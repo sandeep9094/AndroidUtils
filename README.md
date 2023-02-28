@@ -6,10 +6,6 @@ Android Development Helper Classes for improving code structure.
 Logger is Kotlin class for Android development which show logs only in debug mode.
 In release mode app logs will not shown in usb debugging.
 
-[<h4> EncryptedPreferences </h4>](https://github.com/sandeep9094/AndroidUtils/blob/master/EncryptedPreferences.kt)
-
-Encrypted Preferences is Kotlin class for Android development which save sensitive data in key-value pair.
-EncryptedSharedPreferences is an alternative for using SharedPreferences for sensitive data
 
 [<h4> Webview Error Page </h4>](https://github.com/sandeep9094/AndroidUtils/blob/master/webview_error_page.html)
 
@@ -202,6 +198,97 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 
     }
 ```
+
+## [Encrypted Shared Preferences](https://github.com/sandeep9094/AndroidUtils/blob/master/EncryptedPreferences.kt)
+
+Encrypted Preferences is Kotlin class for Android development which save sensitive data in key-value pair.
+EncryptedSharedPreferences is an alternative for using SharedPreferences for sensitive data
+
+### Implementation of EncryptedSharedPrefs with Hilt(Dependency Injection)
+
+
+Add these dependencies in your app/build.gradle file:
+
+```sh
+    // Security Crypto
+    implementation "androidx.security:security-crypto:1.1.0-alpha05"
+    
+    // Dagger Hilt
+    implementation "com.google.dagger:hilt-android:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.44"
+
+```
+
+Create class EncryptSharedPrefs.kt
+This will be responsible to save ecrypted and retreive decrypted preferences.
+
+```
+class EncryptSharedPrefs(context: Context) {
+
+    companion object {
+        private const val SHARED_PREFS_NAME = "secret_shared_prefs"
+        private const val IS_USER_FIRST_TIME = "isUserFirstTime"
+    }
+
+    private var preferences: SharedPreferences
+
+    init {
+        // Step 1: Create or retrieve the Master Key for encryption/decryption
+        val masterKeyAlias = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        // Step 2: Initialize/open an instance of EncryptedSharedPreferences
+        val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
+            context,
+            "${context.packageName}_$SHARED_PREFS_NAME",
+            masterKeyAlias,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        // use the shared preferences and editor as you normally would
+        preferences = sharedPreferences
+    }
+
+    var isUserFirstTime: Boolean
+        get() = preferences.getBoolean(IS_USER_FIRST_TIME, true)
+        set(value) = preferences.edit().putBoolean(IS_USER_FIRST_TIME, value).apply()
+
+}
+```
+
+Adding EncryptedSharePrefs provider in AppModule class of Hilt for depedency injection
+
+```
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideEncryptedSharedPrefs(@ApplicationContext context: Context) = EncryptSharedPrefs(context)
+
+}
+```
+
+How to use EncryptedSharedPrefs in Activity/Fragment
+
+```
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var sharedPrefs: EncryptSharedPrefs
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val isUserFirstTime = sharedPrefs.isUserFirstTime
+        //Use fetched preferences
+    }
+}
+```
+
 
 # Contribute
 
