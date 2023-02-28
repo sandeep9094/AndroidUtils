@@ -2,90 +2,39 @@ package com.example.jetpacklibrariesexamples
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+import androidx.security.crypto.MasterKey
 
-@RequiresApi(Build.VERSION_CODES.M)
-object EncryptedPreferences {
+class EncryptSharedPrefs(context: Context) {
 
-    private lateinit var encryptedSharedPreferences: SharedPreferences
+    companion object {
+        private const val SHARED_PREFS_NAME = "secret_shared_prefs"
+        private const val IS_USER_FIRST_TIME = "isUserFirstTime"
+    }
 
-    /**
-     *  Use init method in Application class of Project for intialize
-     *  encrypted shared preference instance
-     *
-     *  @param context Application Context
-     *  @param preferencesFileName File name which will save encrypted key-value pairs saved
-     */
-    fun init(context: Context, preferencesFileName: String) {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        encryptedSharedPreferences = EncryptedSharedPreferences.create(
-            preferencesFileName, masterKeyAlias, context,
+    private var preferences: SharedPreferences
+
+    init {
+        // Step 1: Create or retrieve the Master Key for encryption/decryption
+        val masterKeyAlias = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        // Step 2: Initialize/open an instance of EncryptedSharedPreferences
+        val sharedPreferences: SharedPreferences = EncryptedSharedPreferences.create(
+            context,
+            "${context.packageName}_$SHARED_PREFS_NAME",
+            masterKeyAlias,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+        // use the shared preferences and editor as you normally would
+        preferences = sharedPreferences
     }
 
-    fun putString(key: String?, value: String?) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putString(key, value)
-        editor.apply()
-    }
 
-    fun putInt(key: String?, value: Int) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putInt(key, value)
-        editor.apply()
-    }
+    var isUserFirstTime: Boolean
+        get() = preferences.getBoolean(IS_USER_FIRST_TIME, true)
+        set(value) = preferences.edit().putBoolean(IS_USER_FIRST_TIME, value).apply()
 
-    fun putBoolean(key: String?, value: Boolean) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putBoolean(key, value)
-        editor.apply()
-    }
-
-    fun putFloat(key: String?, value: Float) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putFloat(key, value)
-        editor.apply()
-    }
-
-    fun putLong(key: String?, value: Long) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putLong(key, value)
-        editor.apply()
-    }
-
-    fun putStringSet(key: String?, value: Set<String?>) {
-        val editor = encryptedSharedPreferences.edit()
-        editor.putStringSet(key, value)
-        editor.apply()
-    }
-
-    fun getString(key: String?, defaultValue: String?): String? {
-        return encryptedSharedPreferences.getString(key, defaultValue)
-    }
-
-    fun getBoolean(key: String?, defaultValue: Boolean): Boolean {
-        return encryptedSharedPreferences.getBoolean(key, defaultValue)
-    }
-
-    fun getFloat(key: String?, defaultValue: Float): Float {
-        return encryptedSharedPreferences.getFloat(key, defaultValue)
-    }
-
-    fun getInt(key: String?, defaultValue: Int): Int {
-        return encryptedSharedPreferences.getInt(key, defaultValue)
-    }
-
-    fun getLong(key: String?, defaultValue: Long): Long {
-        return encryptedSharedPreferences.getLong(key, defaultValue)
-    }
-
-    fun getStringSet(key: String?, defaultValue: Set<String?>?): Set<String?>? {
-        return encryptedSharedPreferences.getStringSet(key, defaultValue)
-    }
 
 }
