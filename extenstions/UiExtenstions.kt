@@ -29,6 +29,12 @@ fun Context?.navigateToActivity(className: Class<*>) {
     this?.startActivity(Intent(this, className))
 }
 
+fun Context?.navigateToActivity(className: Class<*>, bundle: Bundle = bundleOf()) {
+    val intent = Intent(this, className)
+    intent.putExtras(bundle)
+    this?.startActivity(intent)
+}
+
 fun View.makeGone() {
     this.visibility = View.GONE
 }
