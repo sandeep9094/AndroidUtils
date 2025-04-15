@@ -17,7 +17,7 @@ Below are the classes required for Working with Retrofit
 
 RetrofitInstance
 
-```sh
+```kotlin
 object RetrofitManager {
 
     const val BASE_URL = ""
@@ -51,7 +51,7 @@ object RetrofitManager {
 ```
 ApiService
 
-```sh
+```kotlin
 interface ApiService {
     @GET("/path")
     fun getRandomActivity(): Call<ModelClass>
@@ -59,7 +59,7 @@ interface ApiService {
 ```
 Network Connection Interceptor
 
-```sh
+```kotlin
 class NetworkConnectionInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -80,7 +80,7 @@ class NetworkConnectionInterceptor(private val context: Context) : Interceptor {
 ```
 No Internet Connectivity Exception
 
-```sh
+```kotlin
 class NoConnectivityException : IOException() {
     override val message: String
         get() = "No Internet Connection"
@@ -89,7 +89,7 @@ class NoConnectivityException : IOException() {
 
 <h4> Retrofit Implementation </h4>
 
-```sh
+```kotlin
 
 val apiService = RetrofitManager.getApiService(this)
         val call = apiService.getRandomActivity()
@@ -107,3 +107,116 @@ val apiService = RetrofitManager.getApiService(this)
         })
 	
 ```
+
+
+# ✅ Safe API Call with Retrofit in Kotlin
+
+This guide demonstrates how to safely call APIs using `Retrofit` with a reusable `safeApiCall` function that wraps the response in a sealed result class and gracefully handles exceptions.
+
+`safeApiCall` is a suspend function that wraps API calls in a safe block to handle:
+
+- Null response bodies
+- HTTP error codes like `401`, `500`, etc.
+- Network exceptions like `SocketTimeoutException` and `IOException`
+
+
+
+##  Usage
+
+### 1. Create the `safeApiCall` Function
+
+```kotlin
+suspend fun <T> safeApiCall(
+    apiCall: suspend () -> Response<T>
+): ApiResult<T> {
+    return try {
+        val response = apiCall()
+        if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                ApiResult.Success(body)
+            } else {
+                ApiResult.Error("Response body is null")
+            }
+        } else {
+            when (response.code()) {
+                401 -> ApiResult.Error("Unauthorized: Access is denied due to invalid credentials")
+                500 -> ApiResult.Error("Internal Server Error: The server encountered an error and could not complete your request.")
+                else -> ApiResult.Error("Error ${response.code()}: ${response.message()}")
+            }
+        }
+    } catch (e: Exception) {
+        ApiResult.Error(
+            when (e) {
+                is HttpException -> {
+                    val errorBody = e.response()?.errorBody()?.string()
+                    "HTTP Error: ${e.code()} - ${e.message()} - $errorBody"
+                }
+                is SocketTimeoutException -> "Timeout Error: Request timed out"
+                is IOException -> "Network Error: ${e.localizedMessage ?: "Unknown network error"}"
+                else -> "Unknown Error: ${e.localizedMessage ?: "An unknown error occurred"}"
+            }
+        )
+    }
+}
+```
+
+
+
+### 2. Define Your Retrofit `ApiService`
+Return type should be Response instead of Call
+
+```kotlin
+interface ApiService {
+    @GET("users")
+    suspend fun getUsers(): Response<List<User>>
+}
+```
+
+
+## 3. Create Flow Result in ViewModel or Repository Class
+
+```kotlin
+class UserViewModel(private val apiService: ApiService) : ViewModel() {
+
+    private val _userResult = MutableStateFlow<ApiResult<List<User>>?>(null)
+    val userResult: StateFlow<ApiResult<List<User>>?> = _userResult
+
+    fun fetchUsers() {
+        _userResult.value = ApiResult.Loading
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = safeApiCall { apiService.getUsers() }
+            _userResult.value = result
+        }
+    }
+}
+```
+
+
+## 3. Activity or Fragment Usage
+
+```kotlin
+override fun onStart() {
+    super.onStart()
+
+    lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.userResult.filterNotNull().collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        Toast.makeText(this@MainActivity, "Loading users...", Toast.LENGTH_SHORT).show()
+                    }
+                    is ApiResult.Success -> {
+                        val users = result.data
+                        Toast.makeText(this@MainActivity, "Fetched ${users.size} users", Toast.LENGTH_SHORT).show()
+                    }
+                    is ApiResult.Error -> {
+                        Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
