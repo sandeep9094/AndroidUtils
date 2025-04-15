@@ -3,7 +3,7 @@
 
 A reusable generic `BaseListAdapter` to simplify and standardize RecyclerView adapter implementations using **ViewBinding** and **DiffUtil**.
 
----
+
 
 ## Features
 
@@ -12,7 +12,7 @@ A reusable generic `BaseListAdapter` to simplify and standardize RecyclerView ad
 - ✅ Click listener support.
 - ✅ DiffUtil integration for efficient list updates.
 
----
+
 
 ## 🧑‍💻 BaseListAdapter Implementation
 
@@ -49,7 +49,7 @@ class BaseItemCallback<T : Any> : DiffUtil.ItemCallback<T>() {
 
 This example demonstrates how to create and use a `UserItemAdapter` in a Kotlin Android project by extending a generic `BaseListAdapter` that supports ViewBinding and item click handling.
 
----
+
 
 ##  Data Model
 
@@ -62,7 +62,7 @@ data class User(val name: String)
 ```
 
 
----
+
 
 ##  UserItemAdapter
 
@@ -87,7 +87,7 @@ class UserItemAdapter(
 
 
 
----
+
 
 ##  Layout File
 
@@ -117,7 +117,7 @@ class UserItemAdapter(
 
 
 
----
+
 
 ##  How to use in Activity or Fragment
 
