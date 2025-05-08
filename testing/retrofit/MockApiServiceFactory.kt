@@ -33,7 +33,7 @@ class MockApiServiceFactory {
         mockWebServer.enqueue(response)
     }
 
-    fun errorResponse(code: Int = 400, errorBody: String = "Error occurred") {
+    fun errorResponse(code: Int = 404, errorBody: String = "Not found") {
         val response = MockResponse()
             .setResponseCode(code)
             .setBody(errorBody)
