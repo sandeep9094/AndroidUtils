@@ -17,6 +17,40 @@ Below are the classes required for Working with Retrofit
 
 RetrofitInstance
 
+Without NetworkConnectionInterceptor
+```kotlin
+object RetrofitManager {
+
+    const val BASE_URL = ""
+
+    fun getApiService(): ApiService {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(getOkHttpClient())
+            .build()
+        return retrofit.create(ApiService::class.java)
+    }
+
+    private fun getOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor() // set your desired log level
+        if (BuildConfig.DEBUG) {
+            logging.level = HttpLoggingInterceptor.Level.BASIC
+        } else {
+            logging.level = HttpLoggingInterceptor.Level.NONE
+        }
+        val okHttpClientBuilder = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(1, TimeUnit.MINUTES)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+        return okHttpClientBuilder.build()
+    }
+
+}
+```
+
+With Network Connection Interceptor
 ```kotlin
 object RetrofitManager {
 
